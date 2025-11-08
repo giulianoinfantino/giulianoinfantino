@@ -60,33 +60,6 @@
             margin-bottom: 40px;
         }
 
-        .api-config {
-            background: #fff3cd;
-            border: 1px solid #ffc107;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-
-        .api-config h3 {
-            color: #856404;
-            margin-bottom: 10px;
-        }
-
-        .api-config input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ffc107;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-
-        .api-config small {
-            color: #856404;
-            display: block;
-            margin-top: 5px;
-        }
-
         .search-box {
             display: flex;
             gap: 10px;
@@ -464,50 +437,22 @@
         .btn-cite:hover {
             background: #d97706;
         }
-
-        .error-message {
-            background: #fee2e2;
-            border: 1px solid #ef4444;
-            color: #991b1b;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>Semantische Suche im Schleiermacher-Briefwechsel</h1>
-            <p>KI-gestützte Recherche mit OpenAI Embeddings</p>
+            <p>Intelligente Recherche mit TF-IDF Algorithmus</p>
             <div class="bbaw-logo">Berlin-Brandenburgische Akademie der Wissenschaften</div>
         </header>
 
         <main>
             <div class="info-box">
                 <h3>Über diese Anwendung</h3>
-                <p>Diese Demonstrationsanwendung nutzt KI-Embedding-Modelle (OpenAI oder Anthropic Claude) für eine intelligente semantische Suche im Nachlass von Friedrich Daniel Ernst Schleiermacher (1768-1834). Die Briefe stammen aus dem Archiv der Berlin-Brandenburgischen Akademie der Wissenschaften.</p>
-                <p><strong>Technologie:</strong> OpenAI Embeddings oder Anthropic Claude 3.5 | <strong>Datenquelle:</strong> BBAW Archiv & Sammlungen</p>
-                <p id="corsNotice" style="display:none; margin-top:10px; padding:10px; background:#e3f2fd; border-left:3px solid #2196f3; font-size:0.9em;">
-                    ℹ️ <strong>GitHub Pages Modus:</strong> API-Aufrufe werden über einen CORS-Proxy geleitet für maximale Kompatibilität.
-                </p>
-            </div>
-
-            <div class="api-config">
-                <h3>⚙️ API Konfiguration</h3>
-                <div style="margin-bottom: 10px;">
-                    <label for="apiProvider" style="font-weight: 600; display: block; margin-bottom: 5px;">API Anbieter:</label>
-                    <select id="apiProvider" style="width: 100%; padding: 10px; border: 1px solid #ffc107; border-radius: 5px;">
-                        <option value="anthropic">Anthropic (Claude)</option>
-                        <option value="openai">OpenAI</option>
-                    </select>
-                </div>
-                <input 
-                    type="password" 
-                    id="apiKey" 
-                    placeholder="Geben Sie Ihren API Key ein..."
-                >
-                <small><strong>Hinweis:</strong> Ihr API Key wird nur lokal in Ihrem Browser gespeichert. Alternativ nutzen Sie den "Keyword-Suche" Modus.</small>
+                <p>Diese Demonstrationsanwendung bietet <strong>intelligente semantische Suche</strong> im Nachlass von Friedrich Daniel Ernst Schleiermacher (1768-1834). Die Briefe stammen aus dem Archiv der Berlin-Brandenburgischen Akademie der Wissenschaften.</p>
+                <p><strong>Technologie:</strong> Die Suche nutzt TF-IDF (Term Frequency-Inverse Document Frequency) kombiniert mit semantischen Beziehungen für präzise Ergebnisse - komplett im Browser, ohne externe APIs.</p>
+                <p><strong>Datenquelle:</strong> BBAW Archiv & Sammlungen - Nachlass Schleiermacher</p>
             </div>
 
             <section class="search-section">
@@ -517,7 +462,7 @@
                     <input 
                         type="text" 
                         id="searchInput" 
-                        placeholder="Geben Sie Ihre Suchanfrage ein, z.B. 'Wie dachte Schleiermacher über die Rolle der Universität in der Gesellschaft?'..."
+                        placeholder="Geben Sie Ihre Suchanfrage ein, z.B. 'Briefe über Bildung und Erziehung' oder 'Religion und Philosophie'..."
                     >
                     <button class="btn btn-primary" id="searchBtn" onclick="performSearch()">Suchen</button>
                 </div>
@@ -541,13 +486,6 @@
                             <option value="herz">Henriette Herz</option>
                         </select>
                     </div>
-                    <div class="filter-group">
-                        <label for="searchMode">Suchmodus:</label>
-                        <select id="searchMode">
-                            <option value="ai">AI Embeddings (empfohlen)</option>
-                            <option value="keyword">Keyword-Suche (Fallback)</option>
-                        </select>
-                    </div>
                 </div>
             </section>
 
@@ -568,7 +506,7 @@
 
             <div class="loading" id="loading">
                 <div class="spinner"></div>
-                <p style="margin-top: 15px;" id="loadingText">Semantische Suche läuft...</p>
+                <p style="margin-top: 15px;">Intelligente Suche läuft...</p>
             </div>
 
             <section class="results-section" id="resultsSection"></section>
@@ -829,352 +767,112 @@ Ihr Schleiermacher`,
             }
         ];
 
-        // OpenAI API Integration mit verbesserter Fehlerbehandlung
-        async function getEmbedding(text, apiKey, provider = 'openai') {
-            if (provider === 'anthropic') {
-                return await getAnthropicEmbedding(text, apiKey);
-            } else {
-                return await getOpenAIEmbedding(text, apiKey);
-            }
-        }
-
-        async function getAnthropicEmbedding(text, apiKey) {
-            // Anthropic hat kein direktes Embeddings API, aber wir können Claude nutzen
-            // um Texte zu analysieren und Ähnlichkeiten zu bewerten
-            // Für eine produktionsreife Lösung würde man hier ein Embedding-Modell wie Voyage AI nutzen
+        // TF-IDF basierte intelligente Suche
+        function performSmartSearch(query) {
+            console.log('Starte intelligente TF-IDF Suche für:', query);
             
-            // Workaround: Erstelle einen einfachen Text-Fingerprint für Cosine Similarity
-            // Dies ist eine vereinfachte Lösung für die Demo
-            return createTextFingerprint(text);
-        }
-        
-        function createTextFingerprint(text) {
-            // Erstelle einen Vektor basierend auf Worthäufigkeiten und semantischen Merkmalen
-            const words = text.toLowerCase()
-                .replace(/[^\w\s]/g, '')
-                .split(/\s+/)
-                .filter(w => w.length > 3);
+            // Preprocessing
+            const preprocessText = (text) => {
+                return text.toLowerCase()
+                    .replace(/[^\wäöüß\s]/g, ' ')
+                    .split(/\s+/)
+                    .filter(w => w.length > 2);
+            };
             
-            const vector = new Array(384).fill(0); // Ähnlich zu text-embedding-3-small Dimension
+            const queryTerms = preprocessText(query);
             
-            // Einfacher Hash-basierter Ansatz
-            words.forEach((word, idx) => {
-                for (let i = 0; i < word.length; i++) {
-                    const charCode = word.charCodeAt(i);
-                    const position = (charCode * (i + 1) * (idx + 1)) % 384;
-                    vector[position] += 1 / (idx + 1);
-                }
+            // Berechne IDF (Inverse Document Frequency) für alle Terme
+            const documentCount = letterDatabase.length;
+            const termDocumentCount = {};
+            
+            // Zähle in wie vielen Dokumenten jeder Term vorkommt
+            letterDatabase.forEach(letter => {
+                const letterText = `${letter.title} ${letter.excerpt} ${letter.fullText} ${letter.tags.join(' ')}`;
+                const terms = new Set(preprocessText(letterText));
+                terms.forEach(term => {
+                    termDocumentCount[term] = (termDocumentCount[term] || 0) + 1;
+                });
             });
             
-            // Normalisiere den Vektor
-            const magnitude = Math.sqrt(vector.reduce((sum, val) => sum + val * val, 0));
-            return vector.map(v => magnitude > 0 ? v / magnitude : 0);
-        }
-        
-        async function getAnthropicSemanticSearch(query, letters, apiKey) {
-            // Alternative Methode: Nutze Claude direkt um Relevanz zu bewerten
-            const letterSummaries = letters.map(l => ({
-                id: l.id,
-                title: l.title,
-                summary: `${l.excerpt.substring(0, 150)}...`
-            }));
-            
-            const prompt = `Du bist ein Experte für historische Briefanalyse. Bewerte die Relevanz folgender Briefe für die gegebene Suchanfrage.
-
-Suchanfrage: "${query}"
-
-Briefe von Friedrich Schleiermacher:
-${letterSummaries.map((l, i) => `${i + 1}. ID: ${l.id}
-   Titel: ${l.title}
-   Auszug: ${l.summary}`).join('\n\n')}
-
-WICHTIG: Antworte ausschließlich mit einem gültigen JSON-Array. Jedes Objekt muss die Brief-ID und einen Relevanz-Score (0-100) enthalten.
-
-Format: [{"id": "${letterSummaries[0].id}", "score": 85}, {"id": "${letterSummaries[1].id}", "score": 70}, ...]
-
-Bewerte alle ${letters.length} Briefe. Gib hohe Scores (70-100) für sehr relevante, mittlere Scores (40-69) für teilweise relevante, und niedrige Scores (0-39) für wenig relevante Briefe.`;
-
-            try {
-                console.log('Sende Anfrage an Claude...');
-                
-                // Prüfe ob wir auf GitHub Pages laufen
-                const isGitHubPages = window.location.hostname.includes('github.io');
-                
-                // Für GitHub Pages: verwende CORS-Proxy
-                const apiUrl = isGitHubPages 
-                    ? 'https://corsproxy.io/?https://api.anthropic.com/v1/messages'
-                    : 'https://api.anthropic.com/v1/messages';
-                
-                console.log('API URL:', apiUrl);
-                
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-api-key': apiKey,
-                        'anthropic-version': '2023-06-01'
-                    },
-                    body: JSON.stringify({
-                        model: 'claude-3-5-sonnet-20241022',
-                        max_tokens: 2048,
-                        messages: [{
-                            role: 'user',
-                            content: prompt
-                        }]
-                    })
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    console.error('Anthropic API Fehler:', errorData);
-                    throw new Error(`Anthropic API Error ${response.status}: ${errorData.error?.message || response.statusText}`);
-                }
-
-                const data = await response.json();
-                const resultText = data.content[0].text;
-                console.log('Claude Antwort:', resultText);
-                
-                // Extrahiere JSON aus der Antwort - flexibler Ansatz
-                let jsonData;
-                
-                // Versuche direktes Parsen
-                try {
-                    jsonData = JSON.parse(resultText);
-                } catch (e) {
-                    // Falls das fehlschlägt, suche nach JSON im Text
-                    const jsonMatch = resultText.match(/\[\s*\{[\s\S]*?\}\s*\]/);
-                    if (jsonMatch) {
-                        jsonData = JSON.parse(jsonMatch[0]);
-                    } else {
-                        console.error('Konnte kein JSON finden in:', resultText);
-                        throw new Error('Claude hat kein gültiges JSON zurückgegeben. Antwort: ' + resultText.substring(0, 200));
-                    }
-                }
-                
-                console.log('Geparste Scores:', jsonData);
-                
-                // Validiere die Daten
-                if (!Array.isArray(jsonData) || jsonData.length === 0) {
-                    throw new Error('Ungültiges Datenformat von Claude erhalten');
-                }
-                
-                return jsonData;
-            } catch (error) {
-                console.error('Anthropic API Fehler:', error);
-                throw error;
-            }
-        }
-
-        async function getOpenAIEmbedding(text, apiKey) {
-            // Prüfe ob wir auf GitHub Pages laufen
-            const isGitHubPages = window.location.hostname.includes('github.io');
-            
-            // Für GitHub Pages: verwende CORS-Proxy
-            const apiUrl = isGitHubPages 
-                ? 'https://corsproxy.io/?https://api.openai.com/v1/embeddings'
-                : 'https://api.openai.com/v1/embeddings';
-            
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`
-                },
-                body: JSON.stringify({
-                    input: text,
-                    model: "text-embedding-3-small"
-                })
+            // Berechne IDF für Query-Terme
+            const idf = {};
+            queryTerms.forEach(term => {
+                const docFreq = termDocumentCount[term] || 0;
+                idf[term] = docFreq > 0 ? Math.log(documentCount / docFreq) : 0;
             });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                
-                if (response.status === 429) {
-                    throw new Error(`Rate Limit überschritten (429). Mögliche Ursachen:\n• Zu viele Anfragen in kurzer Zeit\n• API-Guthaben aufgebraucht\n• Keine Zahlungsmethode hinterlegt\n\nBitte wechseln Sie zu "Keyword-Suche" oder warten Sie kurz und versuchen Sie es erneut.`);
-                } else if (response.status === 401) {
-                    throw new Error(`Ungültiger API Key (401). Bitte überprüfen Sie Ihren OpenAI API Key.`);
-                } else {
-                    throw new Error(`OpenAI API Error ${response.status}: ${errorData.error?.message || response.statusText}`);
-                }
-            }
-
-            const data = await response.json();
-            return data.data[0].embedding;
-        }
-
-        function cosineSimilarity(vecA, vecB) {
-            let dotProduct = 0;
-            let normA = 0;
-            let normB = 0;
             
-            for (let i = 0; i < vecA.length; i++) {
-                dotProduct += vecA[i] * vecB[i];
-                normA += vecA[i] * vecA[i];
-                normB += vecB[i] * vecB[i];
-            }
-            
-            return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
-        }
-
-        // Hauptsuchfunktion
-        async function performSearch() {
-            const searchInput = document.getElementById('searchInput').value;
-            const resultsSection = document.getElementById('resultsSection');
-            const loading = document.getElementById('loading');
-            const loadingText = document.getElementById('loadingText');
-            const searchBtn = document.getElementById('searchBtn');
-            const apiKey = document.getElementById('apiKey').value;
-            const searchMode = document.getElementById('searchMode').value;
-            const apiProvider = document.getElementById('apiProvider').value;
-
-            if (!searchInput.trim()) {
-                alert('Bitte geben Sie einen Suchbegriff ein.');
-                return;
-            }
-
-            // Zeige Ladeanimation
-            resultsSection.innerHTML = '';
-            loading.style.display = 'block';
-            searchBtn.disabled = true;
-            
-            // Setze passenden Ladetext
-            if (searchMode === 'ai' && apiKey) {
-                loadingText.textContent = apiProvider === 'anthropic' 
-                    ? 'Claude analysiert die Briefe...' 
-                    : 'OpenAI Embeddings werden berechnet...';
-            } else {
-                loadingText.textContent = 'Keyword-Suche läuft...';
-            }
-
-            try {
-                let searchResults;
-
-                if (searchMode === 'ai' && apiKey) {
-                    // AI Embeddings Suche
-                    searchResults = await performAISearch(searchInput, apiKey, apiProvider);
-                } else {
-                    // Fallback auf Keyword-Suche
-                    if (searchMode === 'ai' && !apiKey) {
-                        resultsSection.innerHTML = '<div class="error-message">⚠️ Bitte geben Sie einen API Key ein oder wechseln Sie zu "Keyword-Suche".</div>';
-                        loading.style.display = 'none';
-                        searchBtn.disabled = false;
-                        return;
-                    }
-                    searchResults = performKeywordSearch(searchInput);
-                }
-
-                displayResults(searchResults);
-            } catch (error) {
-                console.error('Suchfehler:', error);
-                resultsSection.innerHTML = `
-                    <div class="error-message">
-                        <strong>Fehler bei der Suche:</strong><br>
-                        ${error.message}<br><br>
-                        <small>Bitte überprüfen Sie Ihren API Key oder wechseln Sie zur Keyword-Suche.</small>
-                    </div>
-                `;
-            } finally {
-                loading.style.display = 'none';
-                searchBtn.disabled = false;
-            }
-        }
-
-        async function performAISearch(query, apiKey, provider) {
-            if (provider === 'anthropic') {
-                // Nutze Claude direkt für semantische Bewertung
-                console.log('Starte Anthropic Suche für:', query);
-                const scores = await getAnthropicSemanticSearch(query, letterDatabase, apiKey);
-                console.log('Erhaltene Scores:', scores);
-                
-                // Mappe Scores zurück zu den Briefen
-                const results = letterDatabase.map(letter => {
-                    const scoreObj = scores.find(s => s.id === letter.id);
-                    const score = scoreObj ? scoreObj.score : 0;
-                    
-                    console.log(`Brief ${letter.id}: Score ${score}`);
-                    
-                    return {
-                        ...letter,
-                        similarity: score,
-                        searchScore: score / 100
-                    };
-                });
-                
-                console.log('Alle Ergebnisse vor Filter:', results.map(r => ({id: r.id, score: r.similarity})));
-                
-                const filtered = results
-                    .filter(r => {
-                        const passes = r.similarity > 0 && applyFilters(r);
-                        console.log(`Brief ${r.id}: similarity=${r.similarity}, passes=${passes}`);
-                        return passes;
-                    })
-                    .sort((a, b) => b.similarity - a.similarity)
-                    .slice(0, 10);
-                
-                console.log('Gefilterte Ergebnisse:', filtered.length);
-                
-                return filtered;
-            } else {
-                // OpenAI Embeddings-basierte Suche
-                const queryEmbedding = await getEmbedding(query, apiKey, provider);
-
-                const results = await Promise.all(letterDatabase.map(async (letter) => {
-                    const letterText = `${letter.excerpt} ${letter.tags.join(' ')} ${letter.fullText}`;
-                    const letterEmbedding = await getEmbedding(letterText, apiKey, provider);
-                    
-                    const similarity = cosineSimilarity(queryEmbedding, letterEmbedding);
-                    
-                    return {
-                        ...letter,
-                        similarity: Math.round(similarity * 100),
-                        searchScore: similarity
-                    };
-                }));
-
-                return results
-                    .filter(r => applyFilters(r))
-                    .sort((a, b) => b.searchScore - a.searchScore)
-                    .slice(0, 10);
-            }
-        }
-
-        function performKeywordSearch(query) {
-            const queryLower = query.toLowerCase();
-            const queryWords = queryLower.split(' ').filter(w => w.length > 2);
-
+            // Berechne TF-IDF Score für jedes Dokument
             const results = letterDatabase.map(letter => {
-                let score = 0;
-                const letterText = (letter.excerpt + ' ' + letter.fullText + ' ' + letter.tags.join(' ')).toLowerCase();
+                const letterText = `${letter.title} ${letter.excerpt} ${letter.fullText} ${letter.tags.join(' ')}`;
+                const letterTerms = preprocessText(letterText);
                 
-                // Keyword-Matching
-                queryWords.forEach(word => {
-                    const regex = new RegExp(word, 'gi');
-                    const matches = letterText.match(regex);
-                    if (matches) {
-                        score += matches.length * 15;
-                    }
+                // Zähle Termfrequenzen
+                const termFreq = {};
+                letterTerms.forEach(term => {
+                    termFreq[term] = (termFreq[term] || 0) + 1;
                 });
-
-                // Tag-Bonus
-                letter.tags.forEach(tag => {
-                    if (queryLower.includes(tag.toLowerCase())) {
-                        score += 20;
-                    }
+                
+                // Berechne TF-IDF Score
+                let tfidfScore = 0;
+                queryTerms.forEach(term => {
+                    const tf = termFreq[term] || 0;
+                    const termIdf = idf[term] || 0;
+                    tfidfScore += tf * termIdf;
                 });
-
-                const similarity = Math.min(Math.round(score), 100);
-
+                
+                // Normalisiere auf 0-100
+                const normalizedScore = Math.min(100, Math.round(tfidfScore * 10));
+                
+                // Bonus für Titel-Matches
+                const titleTerms = preprocessText(letter.title);
+                const titleMatches = queryTerms.filter(term => titleTerms.includes(term)).length;
+                const titleBonus = titleMatches * 10;
+                
+                // Bonus für Tag-Matches
+                const tagText = letter.tags.join(' ').toLowerCase();
+                const tagMatches = queryTerms.filter(term => tagText.includes(term)).length;
+                const tagBonus = tagMatches * 15;
+                
+                // Semantische Verwandtschaft (erweiterte Begriffe)
+                const semanticRelations = {
+                    'bildung': ['erziehung', 'lehre', 'studium', 'universität', 'pädagogik'],
+                    'religion': ['gott', 'glaube', 'theologie', 'kirche', 'frömmigkeit'],
+                    'philosophie': ['denken', 'vernunft', 'geist', 'erkenntnis'],
+                    'politik': ['staat', 'freiheit', 'gesellschaft', 'preußen'],
+                    'hermeneutik': ['verstehen', 'interpretation', 'auslegung', 'text'],
+                    'kunst': ['ästhetik', 'schönheit', 'poesie', 'romantik']
+                };
+                
+                let semanticBonus = 0;
+                queryTerms.forEach(queryTerm => {
+                    Object.entries(semanticRelations).forEach(([key, relatedTerms]) => {
+                        if (queryTerm.includes(key) || relatedTerms.some(r => queryTerm.includes(r))) {
+                            relatedTerms.forEach(relatedTerm => {
+                                if (letterText.toLowerCase().includes(relatedTerm)) {
+                                    semanticBonus += 5;
+                                }
+                            });
+                        }
+                    });
+                });
+                
+                const finalScore = Math.min(100, normalizedScore + titleBonus + tagBonus + semanticBonus);
+                
                 return {
                     ...letter,
-                    similarity: similarity,
-                    searchScore: score
+                    similarity: finalScore,
+                    searchScore: finalScore
                 };
             });
-
-            return results
-                .filter(r => r.searchScore > 0 && applyFilters(r))
-                .sort((a, b) => b.searchScore - a.searchScore)
+            
+            const filtered = results
+                .filter(r => r.similarity > 15 && applyFilters(r)) // Mindest-Threshold
+                .sort((a, b) => b.similarity - a.similarity)
                 .slice(0, 10);
+            
+            console.log('TF-IDF Ergebnisse:', filtered.length, 'Treffer');
+            
+            return filtered;
         }
 
         function applyFilters(letter) {
@@ -1200,6 +898,44 @@ Bewerte alle ${letters.length} Briefe. Gib hohe Scores (70-100) für sehr releva
             }
 
             return true;
+        }
+
+        // Hauptsuchfunktion
+        async function performSearch() {
+            const searchInput = document.getElementById('searchInput').value;
+            const resultsSection = document.getElementById('resultsSection');
+            const loading = document.getElementById('loading');
+            const searchBtn = document.getElementById('searchBtn');
+
+            if (!searchInput.trim()) {
+                alert('Bitte geben Sie einen Suchbegriff ein.');
+                return;
+            }
+
+            // Zeige Ladeanimation
+            resultsSection.innerHTML = '';
+            loading.style.display = 'block';
+            searchBtn.disabled = true;
+
+            try {
+                // Kleine Verzögerung für bessere UX
+                await new Promise(resolve => setTimeout(resolve, 300));
+                
+                // Intelligente TF-IDF Suche
+                const searchResults = performSmartSearch(searchInput);
+                displayResults(searchResults);
+            } catch (error) {
+                console.error('Suchfehler:', error);
+                resultsSection.innerHTML = `
+                    <div class="no-results">
+                        <h3>Fehler bei der Suche</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            } finally {
+                loading.style.display = 'none';
+                searchBtn.disabled = false;
+            }
         }
 
         function displayResults(results) {
@@ -1352,51 +1088,6 @@ Bewerte alle ${letters.length} Briefe. Gib hohe Scores (70-100) für sehr releva
                 closeModal();
             }
         });
-
-        // API Key im LocalStorage speichern
-        document.getElementById('apiKey').addEventListener('change', (e) => {
-            localStorage.setItem('openai_api_key', e.target.value);
-        });
-
-        // API Key beim Laden wiederherstellen
-        window.addEventListener('load', () => {
-            const savedKey = localStorage.getItem('openai_api_key');
-            if (savedKey) {
-                document.getElementById('apiKey').value = savedKey;
-            }
-            
-            // Zeige Hilfetext wenn kein Key vorhanden
-            if (!savedKey) {
-                showApiKeyInfo();
-            }
-            
-            // Prüfe ob wir auf GitHub Pages laufen und zeige Hinweis
-            if (window.location.hostname.includes('github.io')) {
-                const notice = document.getElementById('corsNotice');
-                if (notice) {
-                    notice.style.display = 'block';
-                }
-            }
-        });
-        
-        function showApiKeyInfo() {
-            const infoBox = document.createElement('div');
-            infoBox.className = 'info-box';
-            infoBox.style.marginTop = '20px';
-            infoBox.innerHTML = `
-                <h3>💡 Hinweis zur OpenAI-Integration</h3>
-                <p>Diese Demonstration nutzt OpenAI's Embedding-Modelle für semantische Suche.</p>
-                <p><strong>Für die volle Funktionalität:</strong></p>
-                <ul style="margin-left: 20px; margin-top: 10px;">
-                    <li>Tragen Sie Ihren OpenAI API Key oben ein, oder</li>
-                    <li>Wechseln Sie zu "Keyword-Suche" für eine Demo ohne API-Kosten</li>
-                </ul>
-                <p style="margin-top: 10px;"><small>API Keys erhalten Sie auf <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a></small></p>
-            `;
-            
-            const searchSection = document.querySelector('.search-section');
-            searchSection.parentNode.insertBefore(infoBox, searchSection);
-        }
     </script>
 </body>
 </html>
