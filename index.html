@@ -486,8 +486,11 @@
         <main>
             <div class="info-box">
                 <h3>Über diese Anwendung</h3>
-                <p>Diese Demonstrationsanwendung nutzt KI-Embedding-Modelle (OpenAI oder Anthropic/Voyage) für eine intelligente semantische Suche im Nachlass von Friedrich Daniel Ernst Schleiermacher (1768-1834). Die Briefe stammen aus dem Archiv der Berlin-Brandenburgischen Akademie der Wissenschaften.</p>
-                <p><strong>Technologie:</strong> OpenAI Embeddings oder Anthropic/Voyage AI | <strong>Datenquelle:</strong> BBAW Archiv & Sammlungen</p>
+                <p>Diese Demonstrationsanwendung nutzt KI-Embedding-Modelle (OpenAI oder Anthropic Claude) für eine intelligente semantische Suche im Nachlass von Friedrich Daniel Ernst Schleiermacher (1768-1834). Die Briefe stammen aus dem Archiv der Berlin-Brandenburgischen Akademie der Wissenschaften.</p>
+                <p><strong>Technologie:</strong> OpenAI Embeddings oder Anthropic Claude 3.5 | <strong>Datenquelle:</strong> BBAW Archiv & Sammlungen</p>
+                <p id="corsNotice" style="display:none; margin-top:10px; padding:10px; background:#e3f2fd; border-left:3px solid #2196f3; font-size:0.9em;">
+                    ℹ️ <strong>GitHub Pages Modus:</strong> API-Aufrufe werden über einen CORS-Proxy geleitet für maximale Kompatibilität.
+                </p>
             </div>
 
             <div class="api-config">
@@ -893,7 +896,18 @@ Bewerte alle ${letters.length} Briefe. Gib hohe Scores (70-100) für sehr releva
 
             try {
                 console.log('Sende Anfrage an Claude...');
-                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                
+                // Prüfe ob wir auf GitHub Pages laufen
+                const isGitHubPages = window.location.hostname.includes('github.io');
+                
+                // Für GitHub Pages: verwende CORS-Proxy
+                const apiUrl = isGitHubPages 
+                    ? 'https://corsproxy.io/?https://api.anthropic.com/v1/messages'
+                    : 'https://api.anthropic.com/v1/messages';
+                
+                console.log('API URL:', apiUrl);
+                
+                const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -952,7 +966,15 @@ Bewerte alle ${letters.length} Briefe. Gib hohe Scores (70-100) für sehr releva
         }
 
         async function getOpenAIEmbedding(text, apiKey) {
-            const response = await fetch('https://api.openai.com/v1/embeddings', {
+            // Prüfe ob wir auf GitHub Pages laufen
+            const isGitHubPages = window.location.hostname.includes('github.io');
+            
+            // Für GitHub Pages: verwende CORS-Proxy
+            const apiUrl = isGitHubPages 
+                ? 'https://corsproxy.io/?https://api.openai.com/v1/embeddings'
+                : 'https://api.openai.com/v1/embeddings';
+            
+            const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1346,6 +1368,14 @@ Bewerte alle ${letters.length} Briefe. Gib hohe Scores (70-100) für sehr releva
             // Zeige Hilfetext wenn kein Key vorhanden
             if (!savedKey) {
                 showApiKeyInfo();
+            }
+            
+            // Prüfe ob wir auf GitHub Pages laufen und zeige Hinweis
+            if (window.location.hostname.includes('github.io')) {
+                const notice = document.getElementById('corsNotice');
+                if (notice) {
+                    notice.style.display = 'block';
+                }
             }
         });
         
